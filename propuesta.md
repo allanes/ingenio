@@ -1,4 +1,4 @@
-# 🏭 Propuesta de Sistema de Gestión de Mantenimiento para Planta Industrial
+# Sistema de Gestión de Rutinas para Planta Industrial
 
 **Autor:** [Tu Nombre]  
 **Fecha:** [Insertar Fecha]  
