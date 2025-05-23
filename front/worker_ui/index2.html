@@ -72,6 +72,12 @@ function updateResourceProblems(value) {
     currentView: "",
   };
 
+  if (!state.currentUser) {
+  const saved = localStorage.getItem("currentUser");
+  if (saved) state.currentUser = JSON.parse(saved);
+}
+
+
   function saveState() {
     localStorage.setItem("sectors", JSON.stringify(state.sectors));
     localStorage.setItem("resources", JSON.stringify(state.resources));
@@ -83,7 +89,10 @@ function updateResourceProblems(value) {
     const app = document.getElementById("app");
     app.innerHTML = `
       <div class="mb-4">
-        <h1>Gestor de Flujos de Limpieza</h1>
+        <div class="d-flex justify-content-between align-items-center">
+          <h1>Gestor de Flujos de Limpieza</h1>
+          <button class="btn btn-outline-danger" onclick="logout()">Cerrar sesión</button>
+        </div>
         <button class="btn btn-primary mt-3" onclick="showSectorEditor()">Gestionar Sectores</button>
         <button class="btn btn-secondary mt-3" onclick="showResourceList()">Gestionar Recursos</button>
         <button class="btn btn-success mt-3" onclick="showWorkflowList()">Ver Flujos</button>
@@ -373,6 +382,15 @@ function finalizeWorkflow() {
   showHome();
 }
 
+function toggleWorkflowEnabled(id) {
+  const flow = state.workflows.find(f => f.id === id);
+  if (!flow) return alert("Flujo no encontrado.");
+  flow.enabled = !flow.enabled;
+  saveState();
+  showWorkflowList();
+}
+
+
 function showWorkflowList() {
   const app = document.getElementById("app");
 
@@ -394,9 +412,12 @@ function showWorkflowList() {
         <td>${sector}</td>
         <td>${flow.steps.length}</td>
         <td>${flow.enabled ? "✅ Habilitado" : "❌ Deshabilitado"}</td>
-        <td>
-          <button class="btn btn-sm btn-outline-primary" onclick="editWorkflow(${flow.id})">✏️ Editar</button>
-          <button class="btn btn-sm btn-outline-danger" onclick="deleteWorkflow(${flow.id})">🗑️ Eliminar</button>
+        <td class="d-flex gap-1 flex-wrap">
+            <button class="btn btn-sm btn-outline-primary" onclick="editWorkflow(${flow.id})">✏️ Editar</button>
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteWorkflow(${flow.id})">🗑️ Eliminar</button>
+            <button class="btn btn-sm btn-${flow.enabled ? "warning" : "success"}" onclick="toggleWorkflowEnabled(${flow.id})">
+                ${flow.enabled ? "🚫 Deshabilitar" : "✅ Habilitar"}
+            </button>
         </td>
       </tr>
     `;
@@ -425,8 +446,78 @@ function showWorkflowList() {
   `;
 }
 
+function showLogin() {
+  const app = document.getElementById("app");
 
-  window.addEventListener("DOMContentLoaded", showHome);
+  const userOptions = Object.keys(users).map(name =>
+    `<option value="${name}">${name} (${users[name]})</option>`
+  ).join("");
+
+  app.innerHTML = `
+    <div class="card mx-auto" style="max-width: 400px;">
+      <div class="card-body">
+        <h2 class="card-title text-center mb-4">Iniciar sesión</h2>
+        <select id="loginUser" class="form-select mb-3">
+          <option value="">Seleccionar usuario</option>
+          ${userOptions}
+        </select>
+        <button class="btn btn-primary w-100" onclick="login()">Ingresar</button>
+      </div>
+    </div>
+  `;
+}
+
+function login() {
+  const username = document.getElementById("loginUser").value;
+  if (!username || !users[username]) {
+    alert("Seleccioná un usuario válido");
+    return;
+  }
+
+  state.currentUser = { name: username, role: users[username] };
+  localStorage.setItem("currentUser", JSON.stringify(state.currentUser));
+
+  if (users[username] === "gerente") {
+    showHome();
+  } else {
+    showWorkerDashboard();
+  }
+}
+
+function logout() {
+  localStorage.removeItem("currentUser");
+  state.currentUser = null;
+  showLogin();
+}
+
+function showWorkerDashboard() {
+  const app = document.getElementById("app");
+  app.innerHTML = `
+    <div class="mb-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <h1>Panel de Trabajo</h1>
+        <button class="btn btn-outline-danger" onclick="logout()">Cerrar sesión</button>
+      </div>
+      <div id="workerContent"></div>
+    </div>
+  `;
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  const saved = localStorage.getItem("currentUser");
+  if (saved) {
+    state.currentUser = JSON.parse(saved);
+    if (state.currentUser.role === "gerente") {
+      showHome();
+    } else {
+      showWorkerDashboard();
+    }
+  } else {
+    showLogin();
+  }
+});
+
 </script>
+<script src="workerDashboard.js"></script>
 </body>
 </html>
