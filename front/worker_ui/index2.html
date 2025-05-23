@@ -13,12 +13,52 @@
 <div class="container" id="app"></div>
 
 <script>
+  const users = {
+  "gerente1": "gerente",
+  "operario1": "operario",
+  "operario2": "operario",
+  "asistente1": "asistente",
+  "asistente2": "asistente"
+};
+
   function handleDependsChange(resourceId, stepIndex, selectEl) {
   const selectedValues = Array.from(selectEl.selectedOptions).map(opt => parseInt(opt.value));
   const resource = state.resources.find(r => r.id === resourceId) || state.editingResource;
   resource.subworkflow[stepIndex].dependsOn = selectedValues;
   saveState();
 }
+
+function renderResourceStepPicker() {
+  const sectorId = parseInt(document.getElementById("workflowSector").value);
+  const container = document.getElementById("resourceStepPicker");
+
+  const resources = state.resources.filter(r => r.sectorId === sectorId);
+
+  if (resources.length === 0) {
+    container.innerHTML = "<p class='text-muted'>No hay recursos disponibles para este sector.</p>";
+    return;
+  }
+
+  let html = "<h5>Seleccionar pasos a incluir</h5>";
+
+  resources.forEach(resource => {
+    html += `
+      <div class="card card-body mb-3">
+        <h6>${resource.name}</h6>
+        ${(resource.subworkflow || []).map(step => `
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="step-${step.id}" data-step='${JSON.stringify({ ...step, fromResourceId: resource.id })}'>
+            <label class="form-check-label">${step.name} (${step.expectedTime} min)</label>
+          </div>
+        `).join("")}
+      </div>
+    `;
+  });
+
+  html += `<button class="btn btn-outline-primary btn-sm" onclick="prepareWorkflowSteps()">Continuar</button>`;
+  container.innerHTML = html;
+}
+
 
 function updateResourceProblems(value) {
   state.editingResource.problems = value.split(",").map(v => v.trim()).filter(Boolean);
@@ -46,10 +86,27 @@ function updateResourceProblems(value) {
         <h1>Gestor de Flujos de Limpieza</h1>
         <button class="btn btn-primary mt-3" onclick="showSectorEditor()">Gestionar Sectores</button>
         <button class="btn btn-secondary mt-3" onclick="showResourceList()">Gestionar Recursos</button>
-        <button class="btn btn-success mt-3" onclick="showWorkflowEditor()">Crear Flujo</button>
+        <button class="btn btn-success mt-3" onclick="showWorkflowList()">Ver Flujos</button>
       </div>
     `;
   }
+
+  function editWorkflow(id) {
+  const flow = state.workflows.find(f => f.id === id);
+  if (!flow) return alert("Flujo no encontrado.");
+
+  state.draftWorkflow = JSON.parse(JSON.stringify(flow)); // deep copy
+  showWorkflowEditor();
+  renderStepAssignmentEditor();
+}
+
+function deleteWorkflow(id) {
+  if (!confirm("¿Seguro que deseas eliminar este flujo?")) return;
+  state.workflows = state.workflows.filter(f => f.id !== id);
+  saveState();
+  showWorkflowList();
+}
+
 
   function showSectorEditor() {
     const app = document.getElementById("app");
@@ -206,19 +263,30 @@ function updateResourceProblems(value) {
   }
 
   function showWorkflowEditor() {
-    const sectorOptions = state.sectors.map(s => `<option value="${s.id}">${s.name}</option>`).join("");
-    const app = document.getElementById("app");
-    app.innerHTML = `
-      <h2>Crear Flujo</h2>
-      <input type="text" id="workflowName" class="form-control mb-3" placeholder="Nombre del Flujo">
-      <select id="workflowSector" class="form-select mb-3">
+  const sectorOptions = state.sectors.map(s =>
+    `<option value="${s.id}">${s.name}</option>`
+  ).join("");
+
+  const app = document.getElementById("app");
+  app.innerHTML = `
+    <h2>Crear Flujo</h2>
+    <div class="mb-3">
+      <label class="form-label">Nombre del Flujo</label>
+      <input type="text" id="workflowName" class="form-control">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Sector</label>
+      <select id="workflowSector" class="form-select" onchange="renderResourceStepPicker()">
         <option value="">Seleccionar Sector</option>
         ${sectorOptions}
       </select>
-      <button class="btn btn-primary" onclick="saveWorkflow()">Guardar</button>
-      <button class="btn btn-outline-secondary ms-2" onclick="showHome()">Volver</button>
-    `;
-  }
+    </div>
+    <div id="resourceStepPicker" class="mb-3"></div>
+    <div id="stepAssignmentArea"></div>
+    <button class="btn btn-primary" onclick="finalizeWorkflow()">Guardar Flujo</button>
+    <button class="btn btn-outline-secondary ms-2" onclick="showHome()">Volver</button>
+  `;
+}
 
   function saveWorkflow() {
     const name = document.getElementById("workflowName").value.trim();
@@ -229,6 +297,134 @@ function updateResourceProblems(value) {
       showHome();
     }
   }
+
+  function prepareWorkflowSteps() {
+  const checkboxes = document.querySelectorAll('#resourceStepPicker input[type="checkbox"]:checked');
+  const steps = Array.from(checkboxes).map(cb => {
+    const stepData = JSON.parse(cb.dataset.step);
+    return {
+      ...stepData,
+      id: Date.now() + Math.floor(Math.random() * 10000),
+      assignedTo: "",
+    };
+  });
+
+  state.draftWorkflow = {
+    id: Date.now(),
+    name: document.getElementById("workflowName").value.trim(),
+    sectorId: parseInt(document.getElementById("workflowSector").value),
+    steps,
+    enabled: false
+  };
+
+  renderStepAssignmentEditor();
+}
+
+function renderStepAssignmentEditor() {
+  const userOptions = Object.entries(users)
+    .filter(([_, role]) => role === "operario" || role === "asistente")
+    .map(([name]) => `<option value="${name}">${name}</option>`)
+    .join("");
+
+  const html = `
+    <h5>Asignar usuarios y reordenar pasos</h5>
+    <ul class="list-group mb-3">
+      ${state.draftWorkflow.steps.map((step, i) => `
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div style="flex: 1">
+            <strong>${step.name}</strong>
+            <select class="form-select mt-2" onchange="state.draftWorkflow.steps[${i}].assignedTo = this.value">
+              <option value="">Seleccionar usuario</option>
+              ${userOptions.replace(`value="${step.assignedTo}"`, `value="${step.assignedTo}" selected`)}
+            </select>
+          </div>
+          <div class="ms-2 d-flex flex-column">
+            <button class="btn btn-sm btn-outline-secondary mb-1" onclick="moveStep(${i}, -1)">⬆️</button>
+            <button class="btn btn-sm btn-outline-secondary" onclick="moveStep(${i}, 1)">⬇️</button>
+          </div>
+        </li>
+      `).join("")}
+    </ul>
+  `;
+
+  document.getElementById("stepAssignmentArea").innerHTML = html;
+}
+
+function moveStep(i, direction) {
+  const steps = state.draftWorkflow.steps;
+  const j = i + direction;
+  if (j < 0 || j >= steps.length) return;
+
+  [steps[i], steps[j]] = [steps[j], steps[i]];
+  renderStepAssignmentEditor();
+}
+
+
+function finalizeWorkflow() {
+  const wf = state.draftWorkflow;
+  if (!wf.name || !wf.sectorId || !wf.steps.length || wf.steps.some(s => !s.assignedTo)) {
+    alert("Faltan datos para guardar el flujo. Asegurate de asignar todos los usuarios.");
+    return;
+  }
+
+  state.workflows.push(wf);
+  saveState();
+  alert("Flujo guardado correctamente.");
+  showHome();
+}
+
+function showWorkflowList() {
+  const app = document.getElementById("app");
+
+  if (state.workflows.length === 0) {
+    app.innerHTML = `
+      <h2>Flujos de trabajo</h2>
+      <p class="text-muted">No hay flujos creados todavía.</p>
+      <button class="btn btn-primary" onclick="showWorkflowEditor()">➕ Crear nuevo flujo</button>
+      <button class="btn btn-outline-secondary ms-2" onclick="showHome()">Volver</button>
+    `;
+    return;
+  }
+
+  const rows = state.workflows.map(flow => {
+    const sector = state.sectors.find(s => s.id === flow.sectorId)?.name || "Desconocido";
+    return `
+      <tr>
+        <td>${flow.name}</td>
+        <td>${sector}</td>
+        <td>${flow.steps.length}</td>
+        <td>${flow.enabled ? "✅ Habilitado" : "❌ Deshabilitado"}</td>
+        <td>
+          <button class="btn btn-sm btn-outline-primary" onclick="editWorkflow(${flow.id})">✏️ Editar</button>
+          <button class="btn btn-sm btn-outline-danger" onclick="deleteWorkflow(${flow.id})">🗑️ Eliminar</button>
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  app.innerHTML = `
+    <h2>Flujos de Trabajo</h2>
+    <div class="mb-3 text-end">
+      <button class="btn btn-primary" onclick="showWorkflowEditor()">➕ Crear nuevo flujo</button>
+    </div>
+    <table class="table table-bordered table-striped">
+      <thead class="table-primary">
+        <tr>
+          <th>Nombre</th>
+          <th>Sector</th>
+          <th>Pasos</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows}
+      </tbody>
+    </table>
+    <button class="btn btn-outline-secondary" onclick="showHome()">Volver</button>
+  `;
+}
+
 
   window.addEventListener("DOMContentLoaded", showHome);
 </script>
