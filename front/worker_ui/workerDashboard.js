@@ -1,124 +1,324 @@
+let activeTimer = null;
+
 function showWorkerDashboard() {
-    const user = state.currentUser;
-    if (!user) return showLogin();
-  
-    const flows = state.workflows.filter(f =>
-      f.enabled &&
-      f.steps.some(s => s.assignedTo === user.name)
-    );
-  
-    const html = `
-      <h2>Mis Tareas</h2>
-      ${flows.map(flow => renderFlowCard(flow, user.name)).join("")}
-      <button class="btn btn-outline-secondary mt-3" onclick="logout()">Cerrar sesión</button>
-    `;
-  
-    document.getElementById("app").innerHTML = html;
+  const user = state.currentUser;
+  if (!user) return;
+
+  // Si hay paso activo persistido, continuar
+  if (state.activeStep) {
+    const flow = state.workflows.find(f => f.id === state.activeStep.flowId);
+    const step = flow?.steps.find(s => s.id === state.activeStep.stepId);
+    if (flow && step) {
+      return showActiveStepView(flow, step, true);
+    } else {
+      state.activeStep = null;
+      localStorage.removeItem("activeStep");
+    }
   }
-  
-  function renderFlowCard(flow, username) {
-    const currentStep = flow.steps.find(s =>
-      s.assignedTo === username &&
-      (!s.dependsOn || s.dependsOn.every(id => flow.steps.find(fs => fs.id === id)?.status === "done")) &&
-      s.status !== "done"
-    );
-  
-    const flowProgress = flow.steps.filter(s => s.status === "done").length / flow.steps.length;
-  
-    return `
-      <div class="card mb-3">
-        <div class="card-header bg-primary text-white">
-          ${flow.name}
-        </div>
+
+  // Get all enabled flows where user has assigned steps
+  const flows = state.workflows.filter(f => 
+    f.enabled && f.steps.some(s => s.assignedTo === user.name)
+  );
+
+  if (flows.length === 0) {
+    document.getElementById("app").innerHTML = `
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Mis Tareas</h2>
+        <button class="btn btn-outline-danger" onclick="logout()">Cerrar sesión</button>
+      </div>
+      <p class="text-muted">No hay flujos disponibles.</p>
+    `;
+    return;
+  }
+
+  // Build the dashboard content
+  let content = `
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>Mis Tareas</h2>
+      <button class="btn btn-outline-danger" onclick="logout()">Cerrar sesión</button>
+    </div>
+  `;
+
+  for (const flow of flows) {
+    const steps = flow.steps;
+    
+    // Reset all steps if this is a new run (all steps are done)
+    if (steps.every(s => s.status === "done")) {
+      steps.forEach(s => {
+        s.status = "pending";
+        s.startedAt = null;
+        s.problem = null;
+      });
+      saveState();
+    }
+
+    // Sync step configurations with their resources
+    steps.forEach(step => {
+      const resource = state.resources.find(r => r.id === step.fromResourceId);
+      if (resource) {
+        const resourceStep = resource.subworkflow.find(s => s.name === step.name);
+        if (resourceStep) {
+          step.expectedTime = resourceStep.expectedTime;
+          step.isPassive = resourceStep.isPassive;
+          step.dependsOn = resourceStep.dependsOn;
+        }
+      }
+    });
+    saveState();
+
+    // Find the first available step for this user
+    const firstUserStep = steps.findIndex(s => s.assignedTo === user.name && s.status !== "done");
+    const previousStepsDone = firstUserStep === -1 ? false : 
+      steps.slice(0, firstUserStep).every(s => s.status === "done");
+    
+    content += `
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white">${flow.name}</div>
         <div class="card-body">
-          ${flow.steps.map(step => renderStepStatus(step, username)).join("")}
-          ${currentStep ? `
-            <button class="btn btn-success mt-3" onclick="startStep(${flow.id}, ${currentStep.id})">Iniciar: ${currentStep.name}</button>
-          ` : "<div class='text-muted mt-2'>No hay pasos disponibles aún.</div>"}
-          <div class="progress mt-3" style="height: 20px;">
-            <div class="progress-bar" role="progressbar" style="width: ${Math.round(flowProgress * 100)}%">
-              ${Math.round(flowProgress * 100)}%
+          <div class="list-group">
+    `;
+
+    // Show all steps in order
+    steps.forEach((step, index) => {
+      const isUserStep = step.assignedTo === user.name;
+      const isNextStep = isUserStep && index === firstUserStep && previousStepsDone;
+      const isBlocked = !step.dependsOn || step.dependsOn.every(id => 
+        steps.find(s => s.id === id)?.status === "done"
+      );
+      
+      let statusIcon = "⏳"; // pending
+      if (step.status === "done") statusIcon = "✅";
+      else if (step.status === "in_progress") statusIcon = "▶️";
+      
+      let stepClass = "list-group-item";
+      if (isUserStep) stepClass += " list-group-item-primary";
+      if (step.status === "done") stepClass += " text-success";
+      if (step.status === "in_progress") stepClass += " text-primary";
+      if (!isBlocked && step.status !== "done") stepClass += " text-muted";
+      
+      content += `
+        <div class="${stepClass}">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              ${statusIcon} ${step.name}
+              <small class="text-muted ms-2">(${step.expectedTime} min)</small>
+              ${isUserStep ? '<span class="badge bg-primary ms-2">Tu paso</span>' : ''}
+            </div>
+            <div>
+              ${isNextStep ? `
+                ${step.isPassive ? 
+                  `<button class="btn btn-sm btn-success" onclick="startStep(${flow.id}, ${step.id})">▶️ Iniciar</button>` :
+                  `<button class="btn btn-sm btn-success" onclick="startStep(${flow.id}, ${step.id})">▶️ Iniciar</button>`
+                }
+              ` : ''}
+              ${step.status === "in_progress" && isUserStep ? `
+                <button class="btn btn-sm btn-success" onclick="completeStep(${flow.id}, ${step.id})">✅ Finalizar</button>
+                <button class="btn btn-sm btn-warning" onclick="showProblemForm(${flow.id}, ${step.id})">⚠️ Reportar problema</button>
+              ` : ''}
             </div>
           </div>
         </div>
-      </div>
-    `;
-  }
-  
-  function renderStepStatus(step, username) {
-    const label = step.name + (step.isPassive ? " ⏱️" : "");
-    if (step.status === "done") {
-      return `<div class="text-success">✅ ${label}</div>`;
-    } else if (step.assignedTo === username) {
-      return `<div class="text-warning">🟡 ${label}</div>`;
-    } else if (step.isPassive) {
-      return `<div class="text-info">⏳ ${label} (esperando)</div>`;
-    } else {
-      return `<div class="text-muted">🔒 ${label}</div>`;
-    }
-  }
-  
-  function startStep(flowId, stepId) {
-    const flow = state.workflows.find(f => f.id === flowId);
-    const step = flow.steps.find(s => s.id === stepId);
-  
-    step.status = "in_progress";
-    step.startedAt = Date.now();
-    saveState();
-  
-    showStepInProgress(flow, step);
-  }
-  
-  let stepTimer = null;
-  
-  function showStepInProgress(flow, step) {
-    clearInterval(stepTimer);
-  
-    const expected = step.expectedTime;
-    const start = step.startedAt;
-    const container = document.getElementById("app");
-  
-    container.innerHTML = `
-      <div class="card">
-        <div class="card-header bg-success text-white">${step.name}</div>
-        <div class="card-body">
-          <p><strong>Tiempo esperado:</strong> ${expected} minutos</p>
-          <p><strong>Tiempo actual:</strong> <span id="stepTimer">00:00</span></p>
-          <div class="progress mb-3" style="height: 20px;">
-            <div id="progressBar" class="progress-bar bg-info" role="progressbar" style="width: 0%">0%</div>
+      `;
+    });
+
+    content += `
           </div>
-          <button class="btn btn-success" onclick="finishStep(${flow.id}, ${step.id})">✅ Terminar</button>
-          <button class="btn btn-outline-secondary" onclick="showWorkerDashboard()">← Volver</button>
         </div>
       </div>
     `;
+  }
+
+  document.getElementById("app").innerHTML = content;
+}
+
+function showStartStepView(flow, step) {
+  document.getElementById("app").innerHTML = `
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>Mis Tareas</h2>
+      <button class="btn btn-outline-danger" onclick="logout()">Cerrar sesión</button>
+    </div>
+    <div class="card">
+      <div class="card-header bg-primary text-white">${flow.name}</div>
+      <div class="card-body">
+        <h4>${step.name}</h4>
+        <p>Tiempo estimado: ${step.expectedTime} min</p>
+        <button class="btn btn-success" onclick="startStep(${flow.id}, ${step.id})">▶️ Iniciar</button>
+      </div>
+    </div>
+  `;
+}
+
+function startStep(flowId, stepId) {
+  const flow = state.workflows.find(f => f.id === flowId);
+  const step = flow.steps.find(s => s.id === stepId);
+  step.startedAt = Date.now();
+  step.status = "in_progress";
+  state.activeStep = { flowId: flow.id, stepId: step.id };
+  localStorage.setItem("activeStep", JSON.stringify(state.activeStep));
+  saveState();
   
-    stepTimer = setInterval(() => {
-      const elapsed = Math.floor((Date.now() - start) / 1000);
-      const mins = Math.floor(elapsed / 60);
-      const secs = elapsed % 60;
-      document.getElementById("stepTimer").textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  
-      const pct = Math.min(100, Math.round((elapsed / (expected * 60)) * 100));
-      document.getElementById("progressBar").style.width = `${pct}%`;
-      document.getElementById("progressBar").textContent = `${pct}%`;
-    }, 1000);
+  if (step.isPassive) {
+    // Auto-complete after expected time
+    setTimeout(() => {
+      if (step.status === "in_progress") { // Only complete if still in progress
+        completeStep(flowId, stepId, true);
+      }
+    }, step.expectedTime * 60 * 1000);
   }
   
-  function finishStep(flowId, stepId) {
-    clearInterval(stepTimer);
-    const flow = state.workflows.find(f => f.id === flowId);
-    const step = flow.steps.find(s => s.id === stepId);
-    const elapsed = Date.now() - step.startedAt;
-    const expectedMs = step.expectedTime * 60 * 1000;
-  
-    if (elapsed > expectedMs) {
-      alert("Tiempo excedido. Se debe registrar un problema (pendiente de implementar).");
-      return;
-    }
-  
-    step.status = "done";
+  showWorkerDashboard();
+}
+
+function showActiveStepView(flow, step, resumed = false) {
+  const app = document.getElementById("app");
+
+  if (!resumed) {
+    step.startedAt = Date.now();
+    step.status = "in_progress";
+    state.activeStep = { flowId: flow.id, stepId: step.id };
+    localStorage.setItem("activeStep", JSON.stringify(state.activeStep));
     saveState();
-    showWorkerDashboard();
+  }
+
+  const expectedMs = step.expectedTime * 60000;
+  const start = step.startedAt;
+
+  app.innerHTML = `
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>Mis Tareas</h2>
+      <button class="btn btn-outline-danger" onclick="logout()">Cerrar sesión</button>
+    </div>
+    <div class="card">
+      <div class="card-header bg-primary text-white">${flow.name}</div>
+      <div class="card-body">
+        <h4>${step.name}</h4>
+        <div id="gaugeContainer" class="my-3 text-center"></div>
+        <p><strong>Tiempo esperado:</strong> ${step.expectedTime} minutos</p>
+        <p><strong>Tiempo actual:</strong> <span id="elapsedTime">00:00</span></p>
+        <div id="stepButtons" class="d-flex gap-2 justify-content-center mt-3"></div>
+        <hr/>
+        <h5>Pasos completados:</h5>
+        <ul class="list-group">
+          ${flow.steps.filter(s => s.status === "done").map(s =>
+            `<li class="list-group-item text-success">✅ ${s.name}</li>`).join("")}
+        </ul>
+      </div>
+    </div>
+  `;
+
+  activeTimer = setInterval(() => {
+    const now = Date.now();
+    const elapsed = now - start;
+    const mins = Math.floor(elapsed / 60000);
+    const secs = Math.floor((elapsed % 60000) / 1000);
+    const pct = Math.min(150, Math.floor((elapsed / expectedMs) * 100));
+    const gaugeColor = pct >= 100 ? "#dc3545" : pct >= 70 ? "#ffc107" : "#198754";
+
+    document.getElementById("elapsedTime").textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    drawGauge(pct, gaugeColor);
+
+    const buttons = [];
+    // Only show finish button for non-passive steps
+    if (!step.isPassive && pct < 100) {
+      buttons.push(`<button class="btn btn-success" onclick="completeStep(${flow.id}, ${step.id})">✅ Finalizar</button>`);
+    }
+    buttons.push(`<button class="btn btn-warning" onclick="showProblemForm(${flow.id}, ${step.id})">⚠️ Reportar problema</button>`);
+    document.getElementById("stepButtons").innerHTML = buttons.join(" ");
+  }, 1000);
+}
+
+function drawGauge(percent, color) {
+  const radius = 60;
+  const circumference = 2 * Math.PI * radius;
+  const progress = Math.min(percent, 100);
+  const dash = (progress / 100) * circumference;
+
+  document.getElementById("gaugeContainer").innerHTML = `
+    <svg width="150" height="150" viewBox="0 0 150 150">
+      <circle cx="75" cy="75" r="${radius}" stroke="#e9ecef" stroke-width="12" fill="none"/>
+      <circle cx="75" cy="75" r="${radius}" stroke="${color}" stroke-width="12"
+        fill="none" stroke-dasharray="${dash} ${circumference - dash}" transform="rotate(-90 75 75)" />
+      <text x="75" y="85" text-anchor="middle" font-size="20" fill="#212529">${percent}%</text>
+    </svg>
+  `;
+}
+
+function completeStep(flowId, stepId, auto = false) {
+  clearInterval(activeTimer);
+  const flow = state.workflows.find(f => f.id === flowId);
+  const step = flow.steps.find(s => s.id === stepId);
+  
+  if (!flow || !step) return;
+  
+  step.status = "done";
+  
+  // Check if all steps are completed
+  const allStepsCompleted = flow.steps.every(s => s.status === "done");
+  if (allStepsCompleted) {
+    flow.enabled = false;
+    saveState(); // Save immediately after disabling
+  } else {
+    // If this was a passive step, start the next step automatically
+    if (step.isPassive) {
+      const nextStepIndex = flow.steps.findIndex(s => s.id === stepId) + 1;
+      if (nextStepIndex < flow.steps.length) {
+        const nextStep = flow.steps[nextStepIndex];
+        startStep(flow.id, nextStep.id);
+        return;
+      }
+    }
   }
   
+  state.activeStep = null;
+  localStorage.removeItem("activeStep");
+  saveState();
+  
+  // if (!auto) alert("Paso finalizado.");
+  showWorkerDashboard();
+}
+
+function showProblemForm(flowId, stepId) {
+  clearInterval(activeTimer);
+  const flow = state.workflows.find(f => f.id === flowId);
+  const step = flow.steps.find(s => s.id === stepId);
+  const resource = state.resources.find(r => r.id === step.fromResourceId);
+  const options = (resource?.problems || []).map(p => `<option value="${p}">${p}</option>`).join("");
+
+  document.getElementById("app").innerHTML = `
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>Mis Tareas</h2>
+      <button class="btn btn-outline-danger" onclick="logout()">Cerrar sesión</button>
+    </div>
+    <div class="card">
+      <div class="card-header bg-warning text-dark">Reportar Problema</div>
+      <div class="card-body">
+        <h4>${step.name}</h4>
+        <div class="mb-3">
+          <label class="form-label">Tipo de problema</label>
+          <select id="problemType" class="form-select">${options}</select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Comentario (opcional)</label>
+          <textarea class="form-control" id="problemNote"></textarea>
+        </div>
+        <button class="btn btn-danger" onclick="submitProblem(${flowId}, ${stepId})">📤 Enviar</button>
+        <button class="btn btn-outline-secondary ms-2" onclick="showWorkerDashboard()">← Cancelar</button>
+      </div>
+    </div>
+  `;
+}
+
+function submitProblem(flowId, stepId) {
+  const type = document.getElementById("problemType").value;
+  const note = document.getElementById("problemNote").value.trim();
+  const flow = state.workflows.find(f => f.id === flowId);
+  const step = flow.steps.find(s => s.id === stepId);
+  step.status = "done";
+  step.problem = { type, note };
+  state.activeStep = null;
+  localStorage.removeItem("activeStep");
+  saveState();
+//   alert("Problema registrado.");
+  showWorkerDashboard();
+}
