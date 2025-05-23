@@ -13,6 +13,18 @@
 <div class="container" id="app"></div>
 
 <script>
+  function handleDependsChange(resourceId, stepIndex, selectEl) {
+  const selectedValues = Array.from(selectEl.selectedOptions).map(opt => parseInt(opt.value));
+  const resource = state.resources.find(r => r.id === resourceId) || state.editingResource;
+  resource.subworkflow[stepIndex].dependsOn = selectedValues;
+  saveState();
+}
+
+function updateResourceProblems(value) {
+  state.editingResource.problems = value.split(",").map(v => v.trim()).filter(Boolean);
+  saveState();
+}
+
   const state = {
     sectors: JSON.parse(localStorage.getItem("sectors")) || [],
     resources: JSON.parse(localStorage.getItem("resources")) || [],
@@ -81,15 +93,15 @@
   function showResourceEditor(resourceId = null) {
   const resource = resourceId
     ? state.resources.find(r => r.id === resourceId)
-    : { id: Date.now(), name: "", sectorId: "", subworkflow: [] };
+    : { id: Date.now(), name: "", sectorId: "", problems: [], subworkflow: [] };
 
   const sectorOptions = state.sectors.map(s =>
     `<option value="${s.id}" ${s.id === resource.sectorId ? "selected" : ""}>${s.name}</option>`
   ).join("");
 
-  const stepsHTML = resource.subworkflow.map((step, i) => {
-    const problemsText = (step.problems || []).join(", ");
+  const problemsText = (resource.problems || []).join(", ");
 
+  const stepsHTML = resource.subworkflow.map((step, i) => {
     const dependsOptions = resource.subworkflow
       .filter((_, j) => j !== i)
       .map((s, idx) => {
@@ -98,32 +110,47 @@
       }).join("");
 
     return `
-      <li class="list-group-item">
-        <input class="form-control mb-2" placeholder="Nombre del paso" value="${step.name}" onchange="updateStepField(${resource.id}, ${i}, 'name', this.value)">
-        <input class="form-control mb-2" type="number" placeholder="Tiempo estimado (min)" value="${step.expectedTime}" onchange="updateStepField(${resource.id}, ${i}, 'expectedTime', this.value)">
-        
-        <label class="form-label">Pasos previos:</label>
-        <select multiple class="form-select mb-2" onchange="handleDependsChange(${resource.id}, ${i}, this)">
-          ${dependsOptions}
-        </select>
-
-        <input class="form-control mb-2" placeholder="Problemas posibles (separados por coma)" value="${problemsText}" onchange="updateStepField(${resource.id}, ${i}, 'problems', this.value)">
-
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" ${step.isPassive ? "checked" : ""} onchange="updateStepField(${resource.id}, ${i}, 'isPassive', this.checked)">
-          <label class="form-check-label">Paso pasivo</label>
+      <div class="card card-body mb-3">
+        <div class="mb-2">
+          <label class="form-label">Nombre del paso</label>
+          <input class="form-control" placeholder="Nombre del paso" value="${step.name}" onchange="updateStepField(${resource.id}, ${i}, 'name', this.value)">
         </div>
-      </li>`;
+        <div class="mb-2">
+          <label class="form-label">Tiempo estimado (minutos)</label>
+          <input class="form-control" type="number" placeholder="Tiempo estimado" value="${step.expectedTime}" onchange="updateStepField(${resource.id}, ${i}, 'expectedTime', this.value)">
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Pasos previos (orden de desbloqueo)</label>
+          <select multiple class="form-select" onchange="handleDependsChange(${resource.id}, ${i}, this)">
+            ${dependsOptions}
+          </select>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" ${step.isPassive ? "checked" : ""} onchange="updateStepField(${resource.id}, ${i}, 'isPassive', this.checked)">
+          <label class="form-check-label">Paso pasivo (solo esperar tiempo)</label>
+        </div>
+      </div>
+    `;
   }).join("");
 
   const app = document.getElementById("app");
   app.innerHTML = `
     <h2>${resourceId ? "Editar" : "Crear"} Recurso</h2>
-    <input type="text" id="resourceName" class="form-control mb-3" placeholder="Nombre del Recurso" value="${resource.name}">
-    <select id="sectorSelect" class="form-select mb-3">
-      <option value="">Seleccionar Sector</option>
-      ${sectorOptions}
-    </select>
+    <div class="mb-3">
+      <label class="form-label">Nombre del Recurso</label>
+      <input type="text" id="resourceName" class="form-control" value="${resource.name}">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Sector</label>
+      <select id="sectorSelect" class="form-select">
+        <option value="">Seleccionar Sector</option>
+        ${sectorOptions}
+      </select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Problemas posibles (separados por coma)</label>
+      <input class="form-control" placeholder="Ej: No había agua, Faltó herramienta" value="${problemsText}" onchange="updateResourceProblems(this.value)">
+    </div>
     <h5>Subworkflow</h5>
     <ul class="list-group mb-3">${stepsHTML}</ul>
     <button class="btn btn-outline-secondary btn-sm mb-3" onclick="addStep(${resource.id})">➕ Agregar Paso</button><br>
@@ -133,6 +160,7 @@
 
   state.editingResource = resource;
 }
+
 
 
   function addStep(resourceId) {
