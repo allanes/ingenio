@@ -106,7 +106,6 @@ function updateResourceProblems(value) {
 
   state.draftWorkflow = JSON.parse(JSON.stringify(flow)); // deep copy
   showWorkflowEditor();
-  renderStepAssignmentEditor();
 }
 
 function deleteWorkflow(id) {
@@ -278,16 +277,19 @@ function deleteWorkflow(id) {
 
   const app = document.getElementById("app");
   app.innerHTML = `
-    <h2>Crear Flujo</h2>
+    <h2>${state.draftWorkflow ? "Editar" : "Crear"} Flujo</h2>
     <div class="mb-3">
       <label class="form-label">Nombre del Flujo</label>
-      <input type="text" id="workflowName" class="form-control">
+      <input type="text" id="workflowName" class="form-control" value="${state.draftWorkflow?.name || ''}">
     </div>
     <div class="mb-3">
       <label class="form-label">Sector</label>
       <select id="workflowSector" class="form-select" onchange="renderResourceStepPicker()">
         <option value="">Seleccionar Sector</option>
-        ${sectorOptions}
+        ${sectorOptions.replace(
+          `value="${state.draftWorkflow?.sectorId}"`,
+          `value="${state.draftWorkflow?.sectorId}" selected`
+        )}
       </select>
     </div>
     <div id="resourceStepPicker" class="mb-3"></div>
@@ -295,6 +297,12 @@ function deleteWorkflow(id) {
     <button class="btn btn-primary" onclick="finalizeWorkflow()">Guardar Flujo</button>
     <button class="btn btn-outline-secondary ms-2" onclick="showHome()">Volver</button>
   `;
+
+  // If editing an existing workflow, render the step picker and assignment editor
+  if (state.draftWorkflow) {
+    renderResourceStepPicker();
+    renderStepAssignmentEditor();
+  }
 }
 
   function saveWorkflow() {
@@ -376,7 +384,21 @@ function finalizeWorkflow() {
     return;
   }
 
-  state.workflows.push(wf);
+  // If editing existing workflow, update it instead of creating new one
+  const existingIndex = state.workflows.findIndex(w => w.id === wf.id);
+  if (existingIndex !== -1) {
+    // Preserve the original ID and enabled status
+    const originalWorkflow = state.workflows[existingIndex];
+    wf.id = originalWorkflow.id;
+    wf.enabled = originalWorkflow.enabled;
+    state.workflows[existingIndex] = wf;
+  } else {
+    // Only create new workflow if it doesn't exist
+    wf.id = Date.now();
+    wf.enabled = false;
+    state.workflows.push(wf);
+  }
+
   saveState();
   alert("Flujo guardado correctamente.");
   showHome();

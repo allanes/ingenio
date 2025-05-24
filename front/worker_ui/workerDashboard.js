@@ -32,14 +32,7 @@ function showWorkerDashboard() {
     return;
   }
 
-  // Build the dashboard content
-  let content = `
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2>Mis Tareas</h2>
-      <button class="btn btn-outline-danger" onclick="logout()">Cerrar sesión</button>
-    </div>
-  `;
-
+  // Check for steps that should auto-start
   for (const flow of flows) {
     const steps = flow.steps;
     
@@ -67,6 +60,58 @@ function showWorkerDashboard() {
     });
     saveState();
 
+    // Find the first pending step that should be started
+    let foundPendingStep = false;
+    for (let i = 0; i < steps.length; i++) {
+      const step = steps[i];
+      
+      // Skip if step is not pending
+      if (step.status !== "pending") continue;
+      
+      foundPendingStep = true;
+      
+      // Check if all dependencies are met
+      const ready = !step.dependsOn || step.dependsOn.every(id => 
+        steps.find(s => s.id === id)?.status === "done"
+      );
+      
+      if (!ready) break; // Stop if dependencies aren't met
+      
+      // Only auto-start if:
+      // 1. It's a passive step
+      // 2. OR it follows a passive step
+      // 3. OR it's not the first step in the workflow
+      if (step.isPassive || (i > 0 && steps[i-1].isPassive) || i > 0) {
+        startStep(flow.id, step.id);
+        return;
+      }
+      
+      // If we get here, this is the first step and it's not passive
+      // Don't auto-start it, just break the loop
+      break;
+    }
+    
+    // If we found no pending steps, the workflow might be complete
+    if (!foundPendingStep) {
+      const allDone = steps.every(s => s.status === "done");
+      if (allDone) {
+        flow.enabled = false;
+        saveState();
+      }
+    }
+  }
+
+  // Build the dashboard content
+  let content = `
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>Mis Tareas</h2>
+      <button class="btn btn-outline-danger" onclick="logout()">Cerrar sesión</button>
+    </div>
+  `;
+
+  for (const flow of flows) {
+    const steps = flow.steps;
+    
     // Find the first available step for this user
     const firstUserStep = steps.findIndex(s => s.assignedTo === user.name && s.status !== "done");
     const previousStepsDone = firstUserStep === -1 ? false : 
@@ -152,6 +197,28 @@ function showStartStepView(flow, step) {
 function startStep(flowId, stepId) {
   const flow = state.workflows.find(f => f.id === flowId);
   const step = flow.steps.find(s => s.id === stepId);
+  
+  // Don't start if workflow is disabled or step is already done
+  if (!flow.enabled || step.status === "done") {
+    state.activeStep = null;
+    localStorage.removeItem("activeStep");
+    showWorkerDashboard();
+    return;
+  }
+  
+  // Check if this is the last step
+  const currentStepIndex = flow.steps.findIndex(s => s.id === stepId);
+  const isLastStep = currentStepIndex === flow.steps.length - 1;
+  const allPreviousDone = flow.steps.slice(0, currentStepIndex).every(s => s.status === "done");
+  
+  // Only prevent auto-start of last step, not manual start
+  if (isLastStep && allPreviousDone && step.isPassive) {
+    state.activeStep = null;
+    localStorage.removeItem("activeStep");
+    showWorkerDashboard();
+    return;
+  }
+  
   step.startedAt = Date.now();
   step.status = "in_progress";
   state.activeStep = { flowId: flow.id, stepId: step.id };
@@ -251,30 +318,56 @@ function completeStep(flowId, stepId, auto = false) {
   
   if (!flow || !step) return;
   
+  // Record completion time and elapsed time
+  step.completedAt = Date.now();
+  step.elapsedTime = step.completedAt - step.startedAt;
   step.status = "done";
   
   // Check if all steps are completed
   const allStepsCompleted = flow.steps.every(s => s.status === "done");
   if (allStepsCompleted) {
+    // Disable workflow and reset state for next run
     flow.enabled = false;
-    saveState(); // Save immediately after disabling
-  } else {
+    flow.steps.forEach(s => {
+      s.status = "pending";
+      s.startedAt = null;
+      s.problem = null;
+      s.completedAt = null;
+      s.elapsedTime = null;
+    });
+    saveState();
+    state.activeStep = null;
+    localStorage.removeItem("activeStep");
+    showWorkerDashboard();
+    return;
+  }
+  
+  // Find the next step
+  const currentStepIndex = flow.steps.findIndex(s => s.id === stepId);
+  const nextStepIndex = currentStepIndex + 1;
+  
+  // Only proceed if there is a next step
+  if (nextStepIndex < flow.steps.length) {
+    const nextStep = flow.steps[nextStepIndex];
+    
+    // If next step is assigned to the same user and not passive, start it automatically
+    if (nextStep.assignedTo === state.currentUser.name && !nextStep.isPassive) {
+      startStep(flow.id, nextStep.id);
+      return;
+    }
+    
     // If this was a passive step, start the next step automatically
     if (step.isPassive) {
-      const nextStepIndex = flow.steps.findIndex(s => s.id === stepId) + 1;
-      if (nextStepIndex < flow.steps.length) {
-        const nextStep = flow.steps[nextStepIndex];
-        startStep(flow.id, nextStep.id);
-        return;
-      }
+      startStep(flow.id, nextStep.id);
+      return;
     }
   }
   
+  // Clear active step state
   state.activeStep = null;
   localStorage.removeItem("activeStep");
   saveState();
   
-  // if (!auto) alert("Paso finalizado.");
   showWorkerDashboard();
 }
 
@@ -321,4 +414,24 @@ function submitProblem(flowId, stepId) {
   saveState();
 //   alert("Problema registrado.");
   showWorkerDashboard();
+}
+
+function toggleWorkflowEnabled(id) {
+  const flow = state.workflows.find(f => f.id === id);
+  if (!flow) return alert("Flujo no encontrado.");
+  
+  // Si estamos habilitando el flujo, resetear todos los pasos
+  if (!flow.enabled) {
+    flow.steps.forEach(step => {
+      step.status = "pending";
+      step.startedAt = null;
+      step.problem = null;
+      step.completedAt = null;
+      step.elapsedTime = null;
+    });
+  }
+  
+  flow.enabled = !flow.enabled;
+  saveState();
+  showWorkflowList();
 }
