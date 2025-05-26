@@ -103,19 +103,38 @@ function showWorkerDashboard() {
 
   for (const flow of flows) {
     const steps = flow.steps;
-    
-    // Find the first available step for this user
+    // Pasos del usuario
+    const userSteps = steps.filter(s => s.assignedTo === user.name);
+    const doneUserSteps = userSteps.filter(s => s.status === "done");
+    const pendingUserSteps = userSteps.filter(s => s.status !== "done");
     const firstUserStep = steps.findIndex(s => s.assignedTo === user.name && s.status !== "done");
     const previousStepsDone = firstUserStep === -1 ? false : 
       steps.slice(0, firstUserStep).every(s => s.status === "done");
-    
+    // Próximo paso del usuario
+    const nextUserStep = userSteps.find(s => s.status !== "done");
+    // Estado del flujo
+    let flowStatus = "En curso";
+    if (userSteps.length === 0) flowStatus = "Sin pasos asignados";
+    else if (doneUserSteps.length === userSteps.length) flowStatus = "Completado";
+    else if (doneUserSteps.length === 0) flowStatus = "Pendiente";
+    // Layout mobile-friendly
     content += `
-      <div class="card mb-4">
-        <div class="card-header bg-primary text-white py-2">${flow.name}</div>
+      <div class="card mb-4 shadow-sm" style="border-radius: 1rem;">
+        <div class="card-header bg-primary text-white py-2 d-flex justify-content-between align-items-center" style="border-radius: 1rem 1rem 0 0;">
+          <span style="font-size:1.1rem;font-weight:500;">${flow.name}</span>
+          <span class="badge bg-light text-dark">${flowStatus}</span>
+        </div>
         <div class="card-body p-2">
+          <div class="d-flex flex-column flex-md-row flex-wrap gap-2 align-items-center justify-content-between mb-2">
+            <div>
+              <span class="badge bg-secondary me-1">Pasos asignados: ${userSteps.length}</span>
+              <span class="badge bg-success me-1">Completados: ${doneUserSteps.length}</span>
+              <span class="badge bg-warning text-dark">Pendientes: ${pendingUserSteps.length}</span>
+            </div>
+            
+          </div>
           <div class="list-group list-group-flush">
     `;
-
     // Show all steps in order
     steps.forEach((step, index) => {
       const isUserStep = step.assignedTo === user.name;
@@ -123,19 +142,16 @@ function showWorkerDashboard() {
       const isBlocked = !step.dependsOn || step.dependsOn.every(id => 
         steps.find(s => s.id === id)?.status === "done"
       );
-      
       let statusIcon = "⏳"; // pending
       if (step.status === "done") statusIcon = "✅";
       else if (step.status === "in_progress") statusIcon = "▶️";
-      
-      let stepClass = "list-group-item px-2 py-2";
+      let stepClass = "list-group-item px-2 py-2 border-0";
       if (isUserStep) stepClass += " list-group-item-primary";
       if (step.status === "done") stepClass += " text-success";
       if (step.status === "in_progress") stepClass += " text-primary";
       if (!isBlocked && step.status !== "done") stepClass += " text-muted";
-      
       content += `
-        <div class="${stepClass}">
+        <div class="${stepClass}" style="border-radius:.5rem;">
           <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
             <div class="d-flex align-items-center flex-wrap gap-1">
               <span class="me-1">${statusIcon}</span>
@@ -160,7 +176,6 @@ function showWorkerDashboard() {
         </div>
       `;
     });
-
     content += `
           </div>
         </div>
@@ -233,19 +248,19 @@ function startStep(flowId, stepId) {
 
 function showActiveStepView(flow, step, resumed = false) {
   const app = document.getElementById("app");
-  const currentStepIndex = flow.steps.findIndex(s => s.id === step.id) + 1;
-  
-  // Count only steps assigned to current user
+  // Pasos del usuario
   const userSteps = flow.steps.filter(s => s.assignedTo === state.currentUser.name);
   const userStepIndex = userSteps.findIndex(s => s.id === step.id) + 1;
   const totalUserSteps = userSteps.length;
-
+  // Próximo paso global (puede ser de otro usuario)
+  const allSteps = flow.steps;
+  const currentStepIndex = allSteps.findIndex(s => s.id === step.id);
+  const nextStep = allSteps.slice(currentStepIndex + 1).find(s => s.status !== "done");
   // Clear any existing timer before starting a new one
   if (activeTimer) {
     clearInterval(activeTimer);
     activeTimer = null;
   }
-
   if (!resumed) {
     step.startedAt = Date.now();
     step.status = "in_progress";
@@ -253,24 +268,27 @@ function showActiveStepView(flow, step, resumed = false) {
     localStorage.setItem("activeStep", JSON.stringify(state.activeStep));
     saveState();
   }
-
   const expectedMs = step.expectedTime * 60000;
   const start = step.startedAt;
-
   app.innerHTML = `
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h2 class="h3 mb-0">Rutinas</h2>
       <button class="btn btn-outline-danger btn-sm" onclick="logout()">Cerrar sesión</button>
     </div>
-    <div class="card">
-      <div class="card-header bg-primary text-white py-2 d-flex justify-content-between align-items-center">
-        <span>${flow.name}</span>
-        <span class="badge bg-light text-dark">Paso ${userStepIndex} de ${totalUserSteps}</span>
+    <div class="card shadow-lg" style="border-radius: 1.2rem; max-width: 600px; margin: 0 auto;">
+      <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center" style="border-radius: 1.2rem 1.2rem 0 0;">
+        <span style="font-size:1.2rem;font-weight:600;">${flow.name}</span>
+        <span class="badge bg-info text-dark" style="font-size:1rem; min-width: 120px;">${nextStep ? `Próximo: <b>${nextStep.name}</b>` : "Último paso"}</span>
       </div>
-      <div class="card-body p-3">
-        <h4 class="h5 mb-3">${step.name}</h4>
-        <div id="gaugeContainer" class="my-3 text-center" style="max-width: 200px; margin: 0 auto;"></div>
-        <div class="row text-center mb-3 g-2">
+      <div class="card-body p-4" style="background:#f8f9fa; border-radius: 0 0 1.2rem 1.2rem;">
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-3 gap-2">
+          <span class="badge bg-secondary" style="font-size:1rem;">Paso ${userStepIndex} de ${totalUserSteps}</span>
+          <span class="h4 mb-0 text-primary" style="font-weight:700;">${step.name}</span>
+        </div>
+        <div class="my-4 text-center">
+          <div id="gaugeContainer" style="max-width: 200px; margin: 0 auto;"></div>
+        </div>
+        <div class="row text-center mb-4 g-2">
           <div class="col-6">
             <p class="mb-1"><strong>Tiempo esperado:</strong></p>
             <p class="mb-0">${step.expectedTime} minutos</p>
@@ -280,17 +298,17 @@ function showActiveStepView(flow, step, resumed = false) {
             <p class="mb-0" id="elapsedTime">00:00</p>
           </div>
         </div>
-        <div id="stepButtons" class="d-flex gap-2 justify-content-center mt-3 flex-wrap"></div>
-        <hr class="my-3"/>
-        <h5 class="h6 mb-2">Pasos completados:</h5>
-        <ul class="list-group list-group-flush">
+        <div id="stepButtons" class="d-flex gap-3 justify-content-center mt-3 flex-wrap">
+        </div>
+        <hr class="my-4"/>
+        <h5 class="h6 mb-3">Pasos completados:</h5>
+        <ul class="list-group list-group-flush mb-2">
           ${userSteps.filter(s => s.status === "done").map(s =>
-            `<li class="list-group-item text-success py-2">✅ ${s.name}</li>`).join("")}
+            `<li class="list-group-item text-success py-2" style="background: #eafbe7; border-radius: .5rem; margin-bottom: 4px;">✅ ${s.name}</li>`).join("")}
         </ul>
       </div>
     </div>
   `;
-
   // Only start timer if this step is in progress and assigned to current user
   if (step.status === "in_progress" && step.assignedTo === state.currentUser.name) {
     const updateTimer = () => {
