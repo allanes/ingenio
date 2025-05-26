@@ -24,7 +24,7 @@ function showWorkerDashboard() {
   if (flows.length === 0) {
     document.getElementById("app").innerHTML = `
       <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Mis Tareas</h2>
+        <h2>Rutinas</h2>
         <button class="btn btn-outline-danger" onclick="logout()">Cerrar sesión</button>
       </div>
       <p class="text-muted">No hay flujos disponibles.</p>
@@ -104,7 +104,7 @@ function showWorkerDashboard() {
   // Build the dashboard content
   let content = `
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2>Mis Tareas</h2>
+      <h2>Rutinas</h2>
       <button class="btn btn-outline-danger" onclick="logout()">Cerrar sesión</button>
     </div>
   `;
@@ -180,7 +180,7 @@ function showWorkerDashboard() {
 function showStartStepView(flow, step) {
   document.getElementById("app").innerHTML = `
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2>Mis Tareas</h2>
+      <h2>Rutinas</h2>
       <button class="btn btn-outline-danger" onclick="logout()">Cerrar sesión</button>
     </div>
     <div class="card">
@@ -253,7 +253,7 @@ function showActiveStepView(flow, step, resumed = false) {
 
   app.innerHTML = `
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2>Mis Tareas</h2>
+      <h2>Rutinas</h2>
       <button class="btn btn-outline-danger" onclick="logout()">Cerrar sesión</button>
     </div>
     <div class="card">
@@ -283,7 +283,7 @@ function showActiveStepView(flow, step, resumed = false) {
     const gaugeColor = pct >= 100 ? "#dc3545" : pct >= 70 ? "#ffc107" : "#198754";
 
     document.getElementById("elapsedTime").textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-    drawGauge(pct, gaugeColor);
+    drawGauge(pct, gaugeColor, step.expectedTime);
 
     const buttons = [];
     // Only show finish button for non-passive steps
@@ -295,18 +295,24 @@ function showActiveStepView(flow, step, resumed = false) {
   }, 1000);
 }
 
-function drawGauge(percent, color) {
+function drawGauge(percent, color, expectedTime) {
   const radius = 60;
   const circumference = 2 * Math.PI * radius;
   const progress = Math.min(percent, 100);
   const dash = (progress / 100) * circumference;
+
+  // Calculate elapsed time in minutes and seconds
+  const elapsedMs = (percent / 100) * (expectedTime * 60 * 1000);
+  const mins = Math.floor(elapsedMs / 60000);
+  const secs = Math.floor((elapsedMs % 60000) / 1000);
+  const timeStr = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 
   document.getElementById("gaugeContainer").innerHTML = `
     <svg width="150" height="150" viewBox="0 0 150 150">
       <circle cx="75" cy="75" r="${radius}" stroke="#e9ecef" stroke-width="12" fill="none"/>
       <circle cx="75" cy="75" r="${radius}" stroke="${color}" stroke-width="12"
         fill="none" stroke-dasharray="${dash} ${circumference - dash}" transform="rotate(-90 75 75)" />
-      <text x="75" y="85" text-anchor="middle" font-size="20" fill="#212529">${percent}%</text>
+      <text x="75" y="85" text-anchor="middle" font-size="20" fill="#212529">${timeStr}</text>
     </svg>
   `;
 }
@@ -350,16 +356,19 @@ function completeStep(flowId, stepId, auto = false) {
   if (nextStepIndex < flow.steps.length) {
     const nextStep = flow.steps[nextStepIndex];
     
-    // If next step is assigned to the same user and not passive, start it automatically
-    if (nextStep.assignedTo === state.currentUser.name && !nextStep.isPassive) {
-      startStep(flow.id, nextStep.id);
-      return;
-    }
-    
-    // If this was a passive step, start the next step automatically
-    if (step.isPassive) {
-      startStep(flow.id, nextStep.id);
-      return;
+    // Only auto-start if the next step is assigned to the same user
+    if (nextStep.assignedTo === state.currentUser.name) {
+      // If next step is assigned to the same user and not passive, start it automatically
+      if (!nextStep.isPassive) {
+        startStep(flow.id, nextStep.id);
+        return;
+      }
+      
+      // If this was a passive step, start the next step automatically
+      if (step.isPassive) {
+        startStep(flow.id, nextStep.id);
+        return;
+      }
     }
   }
   
@@ -375,12 +384,12 @@ function showProblemForm(flowId, stepId) {
   clearInterval(activeTimer);
   const flow = state.workflows.find(f => f.id === flowId);
   const step = flow.steps.find(s => s.id === stepId);
-  const resource = state.resources.find(r => r.id === step.fromResourceId);
+  const resource = state.resources.find(r => r.name === step.resourceName);
   const options = (resource?.problems || []).map(p => `<option value="${p}">${p}</option>`).join("");
 
   document.getElementById("app").innerHTML = `
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2>Mis Tareas</h2>
+      <h2>Rutinas</h2>
       <button class="btn btn-outline-danger" onclick="logout()">Cerrar sesión</button>
     </div>
     <div class="card">

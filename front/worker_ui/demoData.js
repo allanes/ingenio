@@ -7,7 +7,7 @@ function initializeDemoData() {
 
     // Create sectors
     const sectors = [
-        { id: 1, name: "Planta Baja" }
+        { id: 1, name: "Recepción" }
     ];
     localStorage.setItem("sectors", JSON.stringify(sectors));
 
@@ -127,7 +127,7 @@ function initializeDemoData() {
     const workflows = [
         {
             id: 1,
-            name: "Limpieza Planta Baja",
+            name: "Limpieza Recepción",
             sectorId: 1,
             enabled: true,
             steps: [

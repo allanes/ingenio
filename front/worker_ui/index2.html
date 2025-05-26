@@ -527,6 +527,7 @@ function showWorkerDashboard() {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+  initializeDemoData(); // Initialize demo data
   const saved = localStorage.getItem("currentUser");
   if (saved) {
     state.currentUser = JSON.parse(saved);
@@ -542,5 +543,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
 </script>
 <script src="workerDashboard.js"></script>
+<script src="demoData.js"></script>
 </body>
 </html>

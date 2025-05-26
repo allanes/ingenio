@@ -8,7 +8,7 @@ from datetime import datetime
 
 # Page config
 st.set_page_config(
-    page_title="Dashboard Limpieza Planta Baja",
+    page_title="Dashboard Limpieza Recepción",
     page_icon="🏭",
     layout="wide"
 )
@@ -41,7 +41,7 @@ latest_execution = df[df['date'] == latest_date]
 previous_execution = df[df['date'] == previous_date] if previous_date else pd.DataFrame()
 
 # Title and header
-st.title("🏭 Dashboard - Limpieza Planta Baja")
+st.title("🏭 Dashboard - Limpieza Recepción")
 st.markdown(f"**Última ejecución**: {latest_date} | **Ejecución anterior**: {previous_date if previous_date else 'N/A'}")
 st.markdown("---")
 
