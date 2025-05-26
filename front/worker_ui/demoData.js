@@ -129,7 +129,7 @@ function initializeDemoData() {
             id: 1,
             name: "Limpieza Recepción",
             sectorId: 1,
-            enabled: true,
+            enabled: false,
             steps: [
                 {
                     id: 1,
