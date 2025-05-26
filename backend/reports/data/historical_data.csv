@@ -48,22 +48,22 @@ workflow_id,workflow_name,sector_id,sector_name,step_id,step_name,resource_id,re
 1,Limpieza Planta Baja,1,Planta Baja,8,Limpieza CIN-01,2,Tolvas TOL-01 y TOL-02,operario2,7,1197000,2024-03-23T11:04:07,2024-03-23T11:24:04,done
 1,Limpieza Planta Baja,1,Planta Baja,9,Limpieza de Rejilla REJ-01,2,Tolvas TOL-01 y TOL-02,operario2,8,1083000,2024-03-23T11:24:04,2024-03-23T11:42:07,done
 1,Limpieza Planta Baja,1,Planta Baja,10,Barrido de Tolva-01,2,Tolvas TOL-01 y TOL-02,operario2,2,285000,2024-03-23T11:42:07,2024-03-23T11:46:52,done
-1,Limpieza Planta Baja,1,Planta Baja,11,Limpieza de Elevador ELE-01,2,Tolvas TOL-01 y TOL-02,operario2,6,798000,2024-03-23T11:46:52,2024-03-23T12:00:10,done
-1,Limpieza Planta Baja,1,Planta Baja,12,Barrido de Tolva-02 a Rejilla,2,Tolvas TOL-01 y TOL-02,operario2,2,228000,2024-03-23T11:46:52,2024-03-23T12:00:10,done
-1,Limpieza Planta Baja,1,Planta Baja,13,Bajar puente de TOL-02,2,Tolvas TOL-01 y TOL-02,operario2,1,114000,2024-03-23T12:00:10,2024-03-23T12:02:04,done
+1,Limpieza Planta Baja,1,Planta Baja,11,Limpieza de Elevador ELE-01,2,Tolvas TOL-01 y TOL-02,operario2,6,798000,2024-03-23T11:46:52,2024-03-23T11:54:06,done
+1,Limpieza Planta Baja,1,Planta Baja,12,Barrido de Tolva-02 a Rejilla,2,Tolvas TOL-01 y TOL-02,operario2,2,228000,2024-03-23T11:54:06,2024-03-23T11:57:42,done
+1,Limpieza Planta Baja,1,Planta Baja,13,Bajar puente de TOL-02,2,Tolvas TOL-01 y TOL-02,operario2,1,108300,2024-03-23T11:57:42,2024-03-23T11:59:30,done
 1,Limpieza Planta Baja,1,Planta Baja,1,Subir Plataformas PLA-01 y pla-02,1,PLA-01 y PLA-02,operario1,1,135375,2024-03-24T10:00:00,2024-03-24T10:02:15,done
 1,Limpieza Planta Baja,1,Planta Baja,2,Colocar pie de Seguridad,1,PLA-01 y PLA-02,operario1,5,487350,2024-03-24T10:02:15,2024-03-24T10:10:20,done
 1,Limpieza Planta Baja,1,Planta Baja,3,Mover basura hacia el medio PLA-01 y PLA-02,1,PLA-01 y PLA-02,operario1,20,1624500,2024-03-24T10:10:20,2024-03-24T10:37:25,done
 1,Limpieza Planta Baja,1,Planta Baja,4,Sacar PSE-01/02,1,PLA-01 y PLA-02,operario1,5,379050,2024-03-24T10:37:25,2024-03-24T10:43:44,done
 1,Limpieza Planta Baja,1,Planta Baja,5,Bajar PLA-01 Y PLA-02,1,PLA-01 y PLA-02,operario1,2,162450,2024-03-24T10:43:44,2024-03-24T10:46:26,done
 1,Limpieza Planta Baja,1,Planta Baja,6,Barrido hacia Tolvas,2,Tolvas TOL-01 y TOL-02,operario2,5,758100,2024-03-24T10:46:26,2024-03-24T10:59:04,done
-1,Limpieza Planta Baja,1,Planta Baja,7,Apertura de Tolvas TOL-01 y TOL-02,2,Tolvas TOL-01 y TOL-02,operario2,1,108300,2024-03-24T10:59:04,2024-03-24T11:00:52,done
-1,Limpieza Planta Baja,1,Planta Baja,8,Limpieza CIN-01,2,Tolvas TOL-01 y TOL-02,operario2,7,1137150,2024-03-24T11:00:52,2024-03-24T11:19:49,done
-1,Limpieza Planta Baja,1,Planta Baja,9,Limpieza de Rejilla REJ-01,2,Tolvas TOL-01 y TOL-02,operario2,8,1028850,2024-03-24T11:19:49,2024-03-24T11:36:58,done
-1,Limpieza Planta Baja,1,Planta Baja,10,Barrido de Tolva-01,2,Tolvas TOL-01 y TOL-02,operario2,2,270750,2024-03-24T11:36:58,2024-03-24T11:41:28,done
-1,Limpieza Planta Baja,1,Planta Baja,11,Limpieza de Elevador ELE-01,2,Tolvas TOL-01 y TOL-02,operario2,6,758100,2024-03-24T11:41:28,2024-03-24T11:54:06,done
-1,Limpieza Planta Baja,1,Planta Baja,12,Barrido de Tolva-02 a Rejilla,2,Tolvas TOL-01 y TOL-02,operario2,2,216600,2024-03-24T11:54:06,2024-03-24T11:57:42,done
-1,Limpieza Planta Baja,1,Planta Baja,13,Bajar puente de TOL-02,2,Tolvas TOL-01 y TOL-02,operario2,1,108300,2024-03-24T11:57:42,2024-03-24T11:59:30,done
+1,Limpieza Planta Baja,1,Planta Baja,7,Apertura de Tolvas TOL-01 y TOL-02,2,Tolvas TOL-01 y TOL-02,operario2,1,108300,2024-03-24T10:59:04,2024-03-24T10:59:52,done
+1,Limpieza Planta Baja,1,Planta Baja,8,Limpieza CIN-01,2,Tolvas TOL-01 y TOL-02,operario2,7,1026278,2024-03-24T10:59:52,2024-03-24T11:15:53,done
+1,Limpieza Planta Baja,1,Planta Baja,9,Limpieza de Rejilla REJ-01,2,Tolvas TOL-01 y TOL-02,operario2,8,969000,2024-03-24T11:15:53,2024-03-24T11:32:10,done
+1,Limpieza Planta Baja,1,Planta Baja,10,Barrido de Tolva-01,2,Tolvas TOL-01 y TOL-02,operario2,2,256500,2024-03-24T11:32:10,2024-03-24T11:36:23,done
+1,Limpieza Planta Baja,1,Planta Baja,11,Limpieza de Elevador ELE-01,2,Tolvas TOL-01 y TOL-02,operario2,6,684000,2024-03-24T11:36:23,2024-03-24T11:48:23,done
+1,Limpieza Planta Baja,1,Planta Baja,12,Barrido de Tolva-02 a Rejilla,2,Tolvas TOL-01 y TOL-02,operario2,2,205200,2024-03-24T11:48:23,2024-03-24T11:51:48,done
+1,Limpieza Planta Baja,1,Planta Baja,13,Bajar puente de TOL-02,2,Tolvas TOL-01 y TOL-02,operario2,1,102600,2024-03-24T11:51:48,2024-03-24T11:53:30,done
 1,Limpieza Planta Baja,1,Planta Baja,1,Subir Plataformas PLA-01 y pla-02,1,PLA-01 y PLA-02,operario1,1,128606,2024-03-25T10:00:00,2024-03-25T10:02:08,done
 1,Limpieza Planta Baja,1,Planta Baja,2,Colocar pie de Seguridad,1,PLA-01 y PLA-02,operario1,5,462983,2024-03-25T10:02:08,2024-03-25T10:09:53,done
 1,Limpieza Planta Baja,1,Planta Baja,3,Mover basura hacia el medio PLA-01 y PLA-02,1,PLA-01 y PLA-02,operario1,20,1543275,2024-03-25T10:09:53,2024-03-25T10:35:38,done
@@ -71,61 +71,48 @@ workflow_id,workflow_name,sector_id,sector_name,step_id,step_name,resource_id,re
 1,Limpieza Planta Baja,1,Planta Baja,5,Bajar PLA-01 Y PLA-02,1,PLA-01 y PLA-02,operario1,2,154328,2024-03-25T10:41:36,2024-03-25T10:44:10,done
 1,Limpieza Planta Baja,1,Planta Baja,6,Barrido hacia Tolvas,2,Tolvas TOL-01 y TOL-02,operario2,5,720195,2024-03-25T10:44:10,2024-03-25T10:56:10,done
 1,Limpieza Planta Baja,1,Planta Baja,7,Apertura de Tolvas TOL-01 y TOL-02,2,Tolvas TOL-01 y TOL-02,operario2,1,102885,2024-03-25T10:56:10,2024-03-25T10:57:52,done
-1,Limpieza Planta Baja,1,Planta Baja,8,Limpieza CIN-01,2,Tolvas TOL-01 y TOL-02,operario2,7,1080293,2024-03-25T10:57:52,2024-03-25T11:15:53,done
-1,Limpieza Planta Baja,1,Planta Baja,9,Limpieza de Rejilla REJ-01,2,Tolvas TOL-01 y TOL-02,operario2,8,977408,2024-03-25T11:15:53,2024-03-25T11:32:10,done
-1,Limpieza Planta Baja,1,Planta Baja,10,Barrido de Tolva-01,2,Tolvas TOL-01 y TOL-02,operario2,2,257213,2024-03-25T11:32:10,2024-03-25T11:36:23,done
-1,Limpieza Planta Baja,1,Planta Baja,11,Limpieza de Elevador ELE-01,2,Tolvas TOL-01 y TOL-02,operario2,6,720195,2024-03-25T11:36:23,2024-03-25T11:48:23,done
-1,Limpieza Planta Baja,1,Planta Baja,12,Barrido de Tolva-02 a Rejilla,2,Tolvas TOL-01 y TOL-02,operario2,2,205770,2024-03-25T11:48:23,2024-03-25T11:51:48,done
-1,Limpieza Planta Baja,1,Planta Baja,13,Bajar puente de TOL-02,2,Tolvas TOL-01 y TOL-02,operario2,1,102885,2024-03-25T11:51:48,2024-03-25T11:53:30,done
-1,Limpieza Planta Baja,1,Planta Baja,1,Subir Plataformas PLA-01 y pla-02,1,PLA-01 y PLA-02,operario1,1,122176,2024-03-26T10:00:00,2024-03-26T10:02:02,done
-1,Limpieza Planta Baja,1,Planta Baja,2,Colocar pie de Seguridad,1,PLA-01 y PLA-02,operario1,5,439834,2024-03-26T10:02:02,2024-03-26T10:09:27,done
-1,Limpieza Planta Baja,1,Planta Baja,3,Mover basura hacia el medio PLA-01 y PLA-02,1,PLA-01 y PLA-02,operario1,20,1466111,2024-03-26T10:09:27,2024-03-26T10:33:48,done
-1,Limpieza Planta Baja,1,Planta Baja,4,Sacar PSE-01/02,1,PLA-01 y PLA-02,operario1,5,342093,2024-03-26T10:33:48,2024-03-26T10:39:26,done
-1,Limpieza Planta Baja,1,Planta Baja,5,Bajar PLA-01 Y PLA-02,1,PLA-01 y PLA-02,operario1,2,146611,2024-03-26T10:39:26,2024-03-26T10:41:52,done
-1,Limpieza Planta Baja,1,Planta Baja,6,Barrido hacia Tolvas,2,Tolvas TOL-01 y TOL-02,operario2,5,684185,2024-03-26T10:41:52,2024-03-26T10:53:12,done
-1,Limpieza Planta Baja,1,Planta Baja,7,Apertura de Tolvas TOL-01 y TOL-02,2,Tolvas TOL-01 y TOL-02,operario2,1,97741,2024-03-26T10:53:12,2024-03-26T10:54:49,done
-1,Limpieza Planta Baja,1,Planta Baja,8,Limpieza CIN-01,2,Tolvas TOL-01 y TOL-02,operario2,7,1026278,2024-03-26T10:54:49,2024-03-26T11:11:52,done
-1,Limpieza Planta Baja,1,Planta Baja,9,Limpieza de Rejilla REJ-01,2,Tolvas TOL-01 y TOL-02,operario2,8,928538,2024-03-26T11:11:52,2024-03-26T11:27:26,done
-1,Limpieza Planta Baja,1,Planta Baja,10,Barrido de Tolva-01,2,Tolvas TOL-01 y TOL-02,operario2,2,244352,2024-03-26T11:27:26,2024-03-26T11:31:30,done
-1,Limpieza Planta Baja,1,Planta Baja,11,Limpieza de Elevador ELE-01,2,Tolvas TOL-01 y TOL-02,operario2,6,684185,2024-03-26T11:31:30,2024-03-26T11:43:50,done
-1,Limpieza Planta Baja,1,Planta Baja,12,Barrido de Tolva-02 a Rejilla,2,Tolvas TOL-01 y TOL-02,operario2,2,195482,2024-03-26T11:43:50,2024-03-26T11:47:04,done
-1,Limpieza Planta Baja,1,Planta Baja,13,Bajar puente de TOL-02,2,Tolvas TOL-01 y TOL-02,operario2,1,97741,2024-03-26T11:47:04,2024-03-26T11:48:41,done
-1,Limpieza Planta Baja,1,Planta Baja,1,Subir Plataformas PLA-01 y pla-02,1,PLA-01 y PLA-02,operario1,1,116067,2024-03-27T10:00:00,2024-03-27T10:01:56,done
-1,Limpieza Planta Baja,1,Planta Baja,2,Colocar pie de Seguridad,1,PLA-01 y PLA-02,operario1,5,417842,2024-03-27T10:01:56,2024-03-27T10:08:51,done
-1,Limpieza Planta Baja,1,Planta Baja,3,Mover basura hacia el medio PLA-01 y PLA-02,1,PLA-01 y PLA-02,operario1,20,1392806,2024-03-27T10:08:51,2024-03-27T10:32:02,done
-1,Limpieza Planta Baja,1,Planta Baja,4,Sacar PSE-01/02,1,PLA-01 y PLA-02,operario1,5,324988,2024-03-27T10:32:02,2024-03-27T10:37:20,done
-1,Limpieza Planta Baja,1,Planta Baja,5,Bajar PLA-01 Y PLA-02,1,PLA-01 y PLA-02,operario1,2,139281,2024-03-27T10:37:20,2024-03-27T10:39:39,done
-1,Limpieza Planta Baja,1,Planta Baja,6,Barrido hacia Tolvas,2,Tolvas TOL-01 y TOL-02,operario2,5,649976,2024-03-27T10:39:39,2024-03-27T10:50:19,done
-1,Limpieza Planta Baja,1,Planta Baja,7,Apertura de Tolvas TOL-01 y TOL-02,2,Tolvas TOL-01 y TOL-02,operario2,1,92854,2024-03-27T10:50:19,2024-03-27T10:51:46,done
-1,Limpieza Planta Baja,1,Planta Baja,8,Limpieza CIN-01,2,Tolvas TOL-01 y TOL-02,operario2,7,974964,2024-03-27T10:51:46,2024-03-27T11:08:00,done
-1,Limpieza Planta Baja,1,Planta Baja,9,Limpieza de Rejilla REJ-01,2,Tolvas TOL-01 y TOL-02,operario2,8,882111,2024-03-27T11:08:00,2024-03-27T11:22:41,done
-1,Limpieza Planta Baja,1,Planta Baja,10,Barrido de Tolva-01,2,Tolvas TOL-01 y TOL-02,operario2,2,232135,2024-03-27T11:22:41,2024-03-27T11:26:33,done
-1,Limpieza Planta Baja,1,Planta Baja,11,Limpieza de Elevador ELE-01,2,Tolvas TOL-01 y TOL-02,operario2,6,649976,2024-03-27T11:26:33,2024-03-27T11:37:13,done
-1,Limpieza Planta Baja,1,Planta Baja,12,Barrido de Tolva-02 a Rejilla,2,Tolvas TOL-01 y TOL-02,operario2,2,185708,2024-03-27T11:37:13,2024-03-27T11:40:17,done
-1,Limpieza Planta Baja,1,Planta Baja,13,Bajar puente de TOL-02,2,Tolvas TOL-01 y TOL-02,operario2,1,83800,2024-03-27T11:40:17,2024-03-27T11:41:44,done
-1,Limpieza Planta Baja,1,Planta Baja,1,Subir Plataformas PLA-01 y pla-02,1,PLA-01 y PLA-02,operario1,1,110264,2024-03-28T10:00:00,2024-03-28T10:01:50,done
-1,Limpieza Planta Baja,1,Planta Baja,2,Colocar pie de Seguridad,1,PLA-01 y PLA-02,operario1,5,396950,2024-03-28T10:01:50,2024-03-28T10:08:25,done
-1,Limpieza Planta Baja,1,Planta Baja,3,Mover basura hacia el medio PLA-01 y PLA-02,1,PLA-01 y PLA-02,operario1,20,1323166,2024-03-28T10:08:25,2024-03-28T10:30:26,done
-1,Limpieza Planta Baja,1,Planta Baja,4,Sacar PSE-01/02,1,PLA-01 y PLA-02,operario1,5,308739,2024-03-28T10:30:26,2024-03-28T10:35:34,done
-1,Limpieza Planta Baja,1,Planta Baja,5,Bajar PLA-01 Y PLA-02,1,PLA-01 y PLA-02,operario1,2,132317,2024-03-28T10:35:34,2024-03-28T10:37:46,done
-1,Limpieza Planta Baja,1,Planta Baja,6,Barrido hacia Tolvas,2,Tolvas TOL-01 y TOL-02,operario2,5,617477,2024-03-28T10:37:46,2024-03-28T10:47:43,done
-1,Limpieza Planta Baja,1,Planta Baja,7,Apertura de Tolvas TOL-01 y TOL-02,2,Tolvas TOL-01 y TOL-02,operario2,1,88211,2024-03-28T10:47:43,2024-03-28T10:49:11,done
-1,Limpieza Planta Baja,1,Planta Baja,8,Limpieza CIN-01,2,Tolvas TOL-01 y TOL-02,operario2,7,926216,2024-03-28T10:49:11,2024-03-28T11:04:27,done
-1,Limpieza Planta Baja,1,Planta Baja,9,Limpieza de Rejilla REJ-01,2,Tolvas TOL-01 y TOL-02,operario2,8,838005,2024-03-28T11:04:27,2024-03-28T11:18:27,done
-1,Limpieza Planta Baja,1,Planta Baja,10,Barrido de Tolva-01,2,Tolvas TOL-01 y TOL-02,operario2,2,220528,2024-03-28T11:18:27,2024-03-28T11:22:07,done
-1,Limpieza Planta Baja,1,Planta Baja,11,Limpieza de Elevador ELE-01,2,Tolvas TOL-01 y TOL-02,operario2,6,617477,2024-03-28T11:22:07,2024-03-28T11:32:04,done
-1,Limpieza Planta Baja,1,Planta Baja,12,Barrido de Tolva-02 a Rejilla,2,Tolvas TOL-01 y TOL-02,operario2,2,176422,2024-03-28T11:32:04,2024-03-28T11:35:08,done
-1,Limpieza Planta Baja,1,Planta Baja,13,Bajar puente de TOL-02,2,Tolvas TOL-01 y TOL-02,operario2,1,88211,2024-03-28T11:35:08,2024-03-28T11:36:36,done
-1,Limpieza Planta Baja,1,Planta Baja,1,Subir Plataformas PLA-01 y pla-02,1,PLA-01 y PLA-02,operario1,1,104751,2024-03-29T10:00:00,2024-03-29T10:01:44,done
-1,Limpieza Planta Baja,1,Planta Baja,2,Colocar pie de Seguridad,1,PLA-01 y PLA-02,operario1,5,377102,2024-03-29T10:01:44,2024-03-29T10:07:59,done
-1,Limpieza Planta Baja,1,Planta Baja,3,Mover basura hacia el medio PLA-01 y PLA-02,1,PLA-01 y PLA-02,operario1,20,1257008,2024-03-29T10:07:59,2024-03-29T10:28:50,done
-1,Limpieza Planta Baja,1,Planta Baja,4,Sacar PSE-01/02,1,PLA-01 y PLA-02,operario1,5,293302,2024-03-29T10:28:50,2024-03-29T10:33:43,done
-1,Limpieza Planta Baja,1,Planta Baja,5,Bajar PLA-01 Y PLA-02,1,PLA-01 y PLA-02,operario1,2,125701,2024-03-29T10:33:43,2024-03-29T10:35:49,done
-1,Limpieza Planta Baja,1,Planta Baja,6,Barrido hacia Tolvas,2,Tolvas TOL-01 y TOL-02,operario2,5,586604,2024-03-29T10:35:49,2024-03-29T10:45:26,done
-1,Limpieza Planta Baja,1,Planta Baja,7,Apertura de Tolvas TOL-01 y TOL-02,2,Tolvas TOL-01 y TOL-02,operario2,1,83800,2024-03-29T10:45:26,2024-03-29T10:46:44,done
-1,Limpieza Planta Baja,1,Planta Baja,8,Limpieza CIN-01,2,Tolvas TOL-01 y TOL-02,operario2,7,879905,2024-03-29T10:46:44,2024-03-29T11:01:19,done
-1,Limpieza Planta Baja,1,Planta Baja,9,Limpieza de Rejilla REJ-01,2,Tolvas TOL-01 y TOL-02,operario2,8,796105,2024-03-29T11:01:19,2024-03-29T11:14:19,done
-1,Limpieza Planta Baja,1,Planta Baja,10,Barrido de Tolva-01,2,Tolvas TOL-01 y TOL-02,operario2,2,209502,2024-03-29T11:14:19,2024-03-29T11:17:49,done
-1,Limpieza Planta Baja,1,Planta Baja,11,Limpieza de Elevador ELE-01,2,Tolvas TOL-01 y TOL-02,operario2,6,586604,2024-03-29T11:17:49,2024-03-29T11:27:26,done
-1,Limpieza Planta Baja,1,Planta Baja,12,Barrido de Tolva-02 a Rejilla,2,Tolvas TOL-01 y TOL-02,operario2,2,167600,2024-03-29T11:27:26,2024-03-29T11:30:16,done
-1,Limpieza Planta Baja,1,Planta Baja,13,Bajar puente de TOL-02,2,Tolvas TOL-01 y TOL-02,operario2,1,83800,2024-03-29T11:30:16,2024-03-29T11:31:34,done 
+1,Limpieza Planta Baja,1,Planta Baja,8,Limpieza CIN-01,2,Tolvas TOL-01 y TOL-02,operario2,7,1026278,2024-03-25T10:57:52,2024-03-25T11:15:53,done
+1,Limpieza Planta Baja,1,Planta Baja,9,Limpieza de Rejilla REJ-01,2,Tolvas TOL-01 y TOL-02,operario2,8,969000,2024-03-25T11:15:53,2024-03-25T11:32:10,done
+1,Limpieza Planta Baja,1,Planta Baja,10,Barrido de Tolva-01,2,Tolvas TOL-01 y TOL-02,operario2,2,256500,2024-03-25T11:32:10,2024-03-25T11:36:23,done
+1,Limpieza Planta Baja,1,Planta Baja,11,Limpieza de Elevador ELE-01,2,Tolvas TOL-01 y TOL-02,operario2,6,684000,2024-03-25T11:36:23,2024-03-25T11:48:23,done
+1,Limpieza Planta Baja,1,Planta Baja,12,Barrido de Tolva-02 a Rejilla,2,Tolvas TOL-01 y TOL-02,operario2,2,205200,2024-03-25T11:48:23,2024-03-25T11:51:48,done
+1,Limpieza Planta Baja,1,Planta Baja,13,Bajar puente de TOL-02,2,Tolvas TOL-01 y TOL-02,operario2,1,102600,2024-03-25T11:51:48,2024-03-25T11:53:30,done
+1,Limpieza Planta Baja,1,Planta Baja,1,Subir Plataformas PLA-01 y pla-02,1,PLA-01 y PLA-02,operario1,1,108300,2024-03-26T10:00:00,2024-03-26T10:01:42,done
+1,Limpieza Planta Baja,1,Planta Baja,2,Colocar pie de Seguridad,1,PLA-01 y PLA-02,operario1,5,390963,2024-03-26T10:01:42,2024-03-26T10:08:12,done
+1,Limpieza Planta Baja,1,Planta Baja,3,Mover basura hacia el medio PLA-01 y PLA-02,1,PLA-01 y PLA-02,operario1,20,1388948,2024-03-26T10:08:12,2024-03-26T10:31:21,done
+1,Limpieza Planta Baja,1,Planta Baja,4,Sacar PSE-01/02,1,PLA-01 y PLA-02,operario1,5,308655,2024-03-26T10:31:21,2024-03-26T10:36:25,done
+1,Limpieza Planta Baja,1,Planta Baja,5,Bajar PLA-01 Y PLA-02,1,PLA-01 y PLA-02,operario1,2,123462,2024-03-26T10:36:25,2024-03-26T10:38:28,done
+1,Limpieza Planta Baja,1,Planta Baja,6,Barrido hacia Tolvas,2,Tolvas TOL-01 y TOL-02,operario2,5,617310,2024-03-26T10:38:28,2024-03-26T10:48:35,done
+1,Limpieza Planta Baja,1,Planta Baja,7,Apertura de Tolvas TOL-01 y TOL-02,2,Tolvas TOL-01 y TOL-02,operario2,1,92597,2024-03-26T10:48:35,2024-03-26T10:50:07,done
+1,Limpieza Planta Baja,1,Planta Baja,8,Limpieza CIN-01,2,Tolvas TOL-01 y TOL-02,operario2,7,925965,2024-03-26T10:50:07,2024-03-26T11:05:27,done
+1,Limpieza Planta Baja,1,Planta Baja,9,Limpieza de Rejilla REJ-01,2,Tolvas TOL-01 y TOL-02,operario2,8,874523,2024-03-26T11:05:27,2024-03-26T11:20:07,done
+1,Limpieza Planta Baja,1,Planta Baja,10,Barrido de Tolva-01,2,Tolvas TOL-01 y TOL-02,operario2,2,231491,2024-03-26T11:20:07,2024-03-26T11:23:58,done
+1,Limpieza Planta Baja,1,Planta Baja,11,Limpieza de Elevador ELE-01,2,Tolvas TOL-01 y TOL-02,operario2,6,529266,2024-03-26T11:23:58,2024-03-26T11:34:05,done
+1,Limpieza Planta Baja,1,Planta Baja,12,Barrido de Tolva-02 a Rejilla,2,Tolvas TOL-01 y TOL-02,operario2,2,158780,2024-03-26T11:34:05,2024-03-26T11:37:05,done
+1,Limpieza Planta Baja,1,Planta Baja,13,Bajar puente de TOL-02,2,Tolvas TOL-01 y TOL-02,operario2,1,79390,2024-03-26T11:37:05,2024-03-26T11:38:37,done
+1,Limpieza Planta Baja,1,Planta Baja,1,Subir Plataformas PLA-01 y pla-02,1,PLA-01 y PLA-02,operario1,1,97741,2024-03-27T10:00:00,2024-03-27T10:01:37,done
+1,Limpieza Planta Baja,1,Planta Baja,2,Colocar pie de Seguridad,1,PLA-01 y PLA-02,operario1,5,371415,2024-03-27T10:01:37,2024-03-27T10:07:48,done
+1,Limpieza Planta Baja,1,Planta Baja,3,Mover basura hacia el medio PLA-01 y PLA-02,1,PLA-01 y PLA-02,operario1,20,1319500,2024-03-27T10:07:48,2024-03-27T10:29:47,done
+1,Limpieza Planta Baja,1,Planta Baja,4,Sacar PSE-01/02,1,PLA-01 y PLA-02,operario1,5,264633,2024-03-27T10:29:47,2024-03-27T10:34:40,done
+1,Limpieza Planta Baja,1,Planta Baja,5,Bajar PLA-01 Y PLA-02,1,PLA-01 y PLA-02,operario1,2,105854,2024-03-27T10:34:40,2024-03-27T10:36:37,done
+1,Limpieza Planta Baja,1,Planta Baja,6,Barrido hacia Tolvas,2,Tolvas TOL-01 y TOL-02,operario2,5,529266,2024-03-27T10:36:37,2024-03-27T10:45:23,done
+1,Limpieza Planta Baja,1,Planta Baja,7,Apertura de Tolvas TOL-01 y TOL-02,2,Tolvas TOL-01 y TOL-02,operario2,1,79390,2024-03-27T10:45:23,2024-03-27T10:46:44,done
+1,Limpieza Planta Baja,1,Planta Baja,8,Limpieza CIN-01,2,Tolvas TOL-01 y TOL-02,operario2,7,793900,2024-03-27T10:46:44,2024-03-27T10:59:54,done
+1,Limpieza Planta Baja,1,Planta Baja,9,Limpieza de Rejilla REJ-01,2,Tolvas TOL-01 y TOL-02,operario2,8,749794,2024-03-27T10:59:54,2024-03-27T11:12:24,done
+1,Limpieza Planta Baja,1,Planta Baja,10,Barrido de Tolva-01,2,Tolvas TOL-01 y TOL-02,operario2,2,198474,2024-03-27T11:12:24,2024-03-27T11:15:32,done
+1,Limpieza Planta Baja,1,Planta Baja,11,Limpieza de Elevador ELE-01,2,Tolvas TOL-01 y TOL-02,operario2,6,529266,2024-03-27T11:15:32,2024-03-27T11:24:11,done
+1,Limpieza Planta Baja,1,Planta Baja,12,Barrido de Tolva-02 a Rejilla,2,Tolvas TOL-01 y TOL-02,operario2,2,158780,2024-03-27T11:24:11,2024-03-27T11:27:09,done
+1,Limpieza Planta Baja,1,Planta Baja,13,Bajar puente de TOL-02,2,Tolvas TOL-01 y TOL-02,operario2,1,79390,2024-03-27T11:27:09,2024-03-27T11:28:29,done
+1,Limpieza Planta Baja,1,Planta Baja,1,Subir Plataformas PLA-01 y pla-02,1,PLA-01 y PLA-02,operario1,1,88211,2024-03-28T10:00:00,2024-03-28T10:01:32,done
+1,Limpieza Planta Baja,1,Planta Baja,2,Colocar pie de Seguridad,1,PLA-01 y PLA-02,operario1,5,335202,2024-03-28T10:01:32,2024-03-28T10:06:50,done
+1,Limpieza Planta Baja,1,Planta Baja,3,Mover basura hacia el medio PLA-01 y PLA-02,1,PLA-01 y PLA-02,operario1,20,1190849,2024-03-28T10:06:50,2024-03-28T10:26:41,done
+1,Limpieza Planta Baja,1,Planta Baja,4,Sacar PSE-01/02,1,PLA-01 y PLA-02,operario1,5,264633,2024-03-28T10:26:41,2024-03-28T10:31:05,done
+1,Limpieza Planta Baja,1,Planta Baja,5,Bajar PLA-01 Y PLA-02,1,PLA-01 y PLA-02,operario1,2,105854,2024-03-28T10:31:05,2024-03-28T10:32:50,done
+1,Limpieza Planta Baja,1,Planta Baja,6,Barrido hacia Tolvas,2,Tolvas TOL-01 y TOL-02,operario2,5,529266,2024-03-28T10:32:50,2024-03-28T10:41:39,done
+1,Limpieza Planta Baja,1,Planta Baja,7,Apertura de Tolvas TOL-01 y TOL-02,2,Tolvas TOL-01 y TOL-02,operario2,1,79390,2024-03-28T10:41:39,2024-03-28T10:42:59,done
+1,Limpieza Planta Baja,1,Planta Baja,8,Limpieza CIN-01,2,Tolvas TOL-01 y TOL-02,operario2,7,793900,2024-03-28T10:42:59,2024-03-28T10:56:09,done
+1,Limpieza Planta Baja,1,Planta Baja,9,Limpieza de Rejilla REJ-01,2,Tolvas TOL-01 y TOL-02,operario2,8,749794,2024-03-28T10:56:09,2024-03-28T11:08:39,done
+1,Limpieza Planta Baja,1,Planta Baja,10,Barrido de Tolva-01,2,Tolvas TOL-01 y TOL-02,operario2,2,198474,2024-03-28T11:08:39,2024-03-28T11:11:47,done
+1,Limpieza Planta Baja,1,Planta Baja,11,Limpieza de Elevador ELE-01,2,Tolvas TOL-01 y TOL-02,operario2,6,529266,2024-03-28T11:11:47,2024-03-28T11:20:36,done
+1,Limpieza Planta Baja,1,Planta Baja,12,Barrido de Tolva-02 a Rejilla,2,Tolvas TOL-01 y TOL-02,operario2,2,158780,2024-03-28T11:20:36,2024-03-28T11:23:14,done
+1,Limpieza Planta Baja,1,Planta Baja,13,Bajar puente de TOL-02,2,Tolvas TOL-01 y TOL-02,operario2,1,79390,2024-03-28T11:23:14,2024-03-28T11:24:34,done 
